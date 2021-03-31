@@ -83,3 +83,38 @@ inline fun <reified T : Parcelable> RecyclerView.initSingleSelectTrack(
     mAdapter.mSelectionTracker = mSelectionTracker
     return mSelectionTracker
 }
+
+/**
+ * RecyclerView简单实现仿单选按钮功能
+ */
+inline fun <reified T : Parcelable> RecyclerView.initRadioSelectTrack(
+    mAdapter: BaseTrackerAdapter<T>
+): SelectionTracker<T> {
+    var mSelectionTracker: SelectionTracker<T>? = null
+    setHasFixedSize(true)
+    adapter = mAdapter
+    mSelectionTracker = SelectionTracker
+        .Builder(
+            "items-selection${Calendar.getInstance().timeInMillis}",
+            this,
+            BaseTrackKeyProvider(mAdapter),
+            BaseTrackLookUp<T>(this),
+            StorageStrategy.createParcelableStorage(T::class.java)
+        )
+        .withSelectionPredicate(object : SelectionTracker.SelectionPredicate<T>() {
+            override fun canSelectMultiple(): Boolean {
+                return false
+            }
+
+            override fun canSetStateForKey(key: T, nextState: Boolean): Boolean {
+                return nextState && mSelectionTracker?.selection?.firstOrNull() != key
+            }
+
+            override fun canSetStateAtPosition(position: Int, nextState: Boolean): Boolean {
+                return true
+            }
+        })
+        .build()
+    mAdapter.mSelectionTracker = mSelectionTracker
+    return mSelectionTracker
+}

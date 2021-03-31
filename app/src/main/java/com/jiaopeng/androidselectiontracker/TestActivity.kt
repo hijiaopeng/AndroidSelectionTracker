@@ -28,11 +28,15 @@ class TestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test)
 
+        /**
+         * 初始化调用
+         */
         val track = rv_test?.initSingleSelectTrack(
             testAdapter
         )
 
         btn_show?.setOnClickListener {
+            //获取最后选择的数据
             track?.selection?.forEach {
                 Log.e("JP", "onCreate: $it")
             }
